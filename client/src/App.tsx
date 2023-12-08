@@ -25,6 +25,7 @@ interface Data {
 const TODAY = new Date();
 
 function App() {
+  const [url, setUrl] = useState("cbebb9c3c9e745da93d768f8dbacc1e6");
   const [data, setEvents] = useState<Data | null>(null);
   const [hourlyGoal, setHourlyGoal] = useState(60);
   const [dailyCount, setDailyCount] = useState(getDayCount(TODAY));
@@ -44,12 +45,13 @@ function App() {
   }, 0);
 
   useEffect(() => {
-    fetch("/api")
+    fetch("/api/".concat(url))
       .then((res) => res.json())
-      .then((data) => setEvents(data));
+      .then((data) => setEvents(data))
+      .catch((err) => console.log(err))
 
     initializeWeek(TODAY);
-  }, []);
+  }, [url]);
 
   useEffect(() => {
     updateDayCount(TODAY, dailyCount);
@@ -78,6 +80,7 @@ function App() {
   return (
     <div>
       <h1>Events</h1>
+      <URLInput url={url} setUrl={setUrl} />
       <HourlyGoal defaultValue={hourlyGoal} onChange={setHourlyGoal} />
       <p>
         Weekly goal: {weeklyGoal ? `${weeklyCount}/${weeklyGoal}` : "Loading..."}
@@ -105,6 +108,32 @@ function App() {
 }
 
 export default App;
+
+function URLInput({ url, setUrl }: { url: string, setUrl: (value: string) => void }) {
+  const [urlCopy, setUrlCopy] = useState(url);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      console.log('running');
+      setUrl(urlCopy || "cbebb9c3c9e745da93d768f8dbacc1e6");
+    }, 1500)
+
+    return () => {
+      clearTimeout(timeout);
+    }
+  }, [urlCopy, setUrl])
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const value = event.target.value;
+    setUrlCopy(value);
+  }
+
+  return (
+    <div>
+      <input type="text" value={urlCopy} onChange={handleChange}/>
+    </div>
+  );
+}
 
 interface HourlyGoalProps {
   defaultValue: number;

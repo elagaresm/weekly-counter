@@ -7,8 +7,9 @@ app.get("/", (_, res) => {
   res.send('<a href="/api">Go to API</a>');
 });
 
-app.get("/api", async (_, res) => {
-  const events = await getEvents();
+app.get("/api/:url", async (req, res) => {
+  const { url } = req.params;
+  const events = await getEvents(url);
   res.json(events);
 });
 

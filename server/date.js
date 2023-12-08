@@ -2,10 +2,9 @@ const ical = require("ical");
 
 const today = new Date().toLocaleDateString().replace(/\//g, "-");
 
-exports.getEvents = async function () {
-  const response = await fetch(
-    "https://my.tanda.co/roster/subscribe/cbebb9c3c9e745da93d768f8dbacc1e6"
-  );
+exports.getEvents = async function(url) {
+  const baseURL = "https://my.tanda.co/roster/subscribe/"
+  const response = await fetch(baseURL.concat(url));
   const text = await response.text();
   const data = ical.parseICS(text);
   const [startOfWeek, endOfWeek] = getStartAndEndOfWeek();
